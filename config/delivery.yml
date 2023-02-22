@@ -1,16 +1,16 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: where-for-dinner-search
+  name: where-for-dinner-availability
   annotations:
     ootb.apps.tanzu.vmware.com/servicebinding-workload: "true"
     ootb.apps.tanzu.vmware.com/apidescriptor-ref: "true"
   labels:
-    app.kubernetes.io/part-of: where-for-dinner-search
+    app.kubernetes.io/part-of: where-for-dinner-availability
     apps.tanzu.vmware.com/workload-type: web
     networking.knative.dev/visibility: cluster-local
     app.kubernetes.io/component: run
-    carto.run/workload-name: where-for-dinner-search
+    carto.run/workload-name: where-for-dinner-availability
 spec:
   template:
     metadata:
@@ -26,28 +26,25 @@ spec:
           spring-boot-convention/app-live-view-connector-boot
           spring-boot-convention/app-live-view-appflavours-boot
           spring-boot-convention/service-intent-postgres
-          spring-boot-convention/service-intent-rabbitmq
           appliveview-sample/app-live-view-appflavour-check
         developer.conventions/target-containers: workload
         kubectl.kubernetes.io/last-applied-configuration: |
-          {"apiVersion":"carto.run/v1alpha1","kind":"Workload","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"where-for-dinner-search","apps.tanzu.vmware.com/workload-type":"web","networking.knative.dev/visibility":"cluster-local"},"name":"where-for-dinner-search","namespace":"my-apps"},"spec":{"env":[{"name":"spring_profiles_active","value":"mysql"}],"params":[{"name":"gitops_repository","value":"ssh://git@github.com/dapdelivery/where-for-dinner-dest-22-02-2023-13-17-50-104967261.git"},{"name":"gitops_ssh_secret","value":"git-ssh"}],"serviceClaims":[{"name":"rmq","ref":{"apiVersion":"services.apps.tanzu.vmware.com/v1alpha1","kind":"ResourceClaim","name":"rmq-where-for-dinner"}},{"name":"db","ref":{"apiVersion":"services.apps.tanzu.vmware.com/v1alpha1","kind":"ResourceClaim","name":"mysql-where-for-dinner"}}],"source":{"git":{"ref":{"branch":"main"},"url":"ssh://git@github.com/dapdelivery/where-for-dinner-22-02-2023-13-17-50-104967261.git"},"subPath":"where-for-dinner-search"}}}
+          {"apiVersion":"carto.run/v1alpha1","kind":"Workload","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"where-for-dinner-availability","apps.tanzu.vmware.com/workload-type":"web","networking.knative.dev/visibility":"cluster-local"},"name":"where-for-dinner-availability","namespace":"my-apps"},"spec":{"build":{"env":[{"name":"BP_MAVEN_BUILD_ARGUMENTS","value":"-P native -Dmaven.test.skip=true --no-transfer-progress package"}]},"env":[{"name":"spring_profiles_active","value":"mysql"}],"params":[{"name":"gitops_repository","value":"ssh://git@github.com/dapdelivery/where-for-dinner-dest-22-02-2023-13-17-50-104967261.git"},{"name":"gitops_ssh_secret","value":"git-ssh"}],"serviceClaims":[{"name":"db","ref":{"apiVersion":"services.apps.tanzu.vmware.com/v1alpha1","kind":"ResourceClaim","name":"mysql-where-for-dinner"}}],"source":{"git":{"ref":{"branch":"main"},"url":"ssh://git@github.com/dapdelivery/where-for-dinner-22-02-2023-13-17-50-104967261.git"},"subPath":"where-for-dinner-availability"}}}
         services.conventions.carto.run/postgres: r2dbc-postgresql/0.9.2.RELEASE
-        services.conventions.carto.run/rabbitmq: amqp-client/5.14.2
       labels:
         app.kubernetes.io/component: run
-        app.kubernetes.io/part-of: where-for-dinner-search
+        app.kubernetes.io/part-of: where-for-dinner-availability
         apps.tanzu.vmware.com/auto-configure-actuators: "false"
         apps.tanzu.vmware.com/workload-type: web
-        carto.run/workload-name: where-for-dinner-search
+        carto.run/workload-name: where-for-dinner-availability
         conventions.carto.run/framework: spring-boot
         networking.knative.dev/visibility: cluster-local
         services.conventions.carto.run/postgres: workload
-        services.conventions.carto.run/rabbitmq: workload
         tanzu.app.live.view: "true"
         tanzu.app.live.view.application.actuator.path: actuator
         tanzu.app.live.view.application.actuator.port: "8080"
         tanzu.app.live.view.application.flavours: spring-boot
-        tanzu.app.live.view.application.name: where-for-dinner-search
+        tanzu.app.live.view.application.name: where-for-dinner-availability
     spec:
       containers:
       - env:
@@ -55,7 +52,7 @@ spec:
           value: mysql
         - name: JAVA_TOOL_OPTIONS
           value: -Dmanagement.endpoint.health.probes.add-additional-paths="true" -Dmanagement.health.probes.enabled="true" -Dserver.port="8080"
-        image: dev.registry.tanzu.vmware.com/tanzu-application-platform/ci-pipeline/apps-22-02-2023-13-17-50-104967261/where-for-dinner-search-my-apps@sha256:163beec00eef42c003aa77f5bb5e9a05e3a9502c2a6132fc842b13e3ea128560
+        image: dev.registry.tanzu.vmware.com/tanzu-application-platform/ci-pipeline/apps-22-02-2023-13-17-50-104967261/where-for-dinner-availability-my-apps@sha256:17327bfd42436ec91685bc3f32474dcf4893d0da10ecc78bb60d9b99c5ac3c17
         livenessProbe:
           httpGet:
             path: /livez
