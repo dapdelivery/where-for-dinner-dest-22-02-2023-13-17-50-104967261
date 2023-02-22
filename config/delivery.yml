@@ -1,15 +1,16 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: where-for-dinner
+  name: where-for-dinner-notify
   annotations:
     ootb.apps.tanzu.vmware.com/servicebinding-workload: "true"
     ootb.apps.tanzu.vmware.com/apidescriptor-ref: "true"
   labels:
-    app.kubernetes.io/part-of: where-for-dinner-api-gateway
+    app.kubernetes.io/part-of: where-for-dinner-notify
     apps.tanzu.vmware.com/workload-type: web
+    networking.knative.dev/visibility: cluster-local
     app.kubernetes.io/component: run
-    carto.run/workload-name: where-for-dinner
+    carto.run/workload-name: where-for-dinner-notify
 spec:
   template:
     metadata:
@@ -24,30 +25,29 @@ spec:
           spring-boot-convention/app-live-view-appflavour-check
           spring-boot-convention/app-live-view-connector-boot
           spring-boot-convention/app-live-view-appflavours-boot
-          spring-boot-convention/app-live-view-connector-scg
-          spring-boot-convention/app-live-view-appflavours-scg
           appliveview-sample/app-live-view-appflavour-check
         developer.conventions/target-containers: workload
         kubectl.kubernetes.io/last-applied-configuration: |
-          {"apiVersion":"carto.run/v1alpha1","kind":"Workload","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"where-for-dinner-api-gateway","apps.tanzu.vmware.com/workload-type":"web"},"name":"where-for-dinner","namespace":"my-apps"},"spec":{"params":[{"name":"gitops_repository","value":"ssh://git@github.com/dapdelivery/where-for-dinner-dest-22-02-2023-13-17-50-104967261.git"},{"name":"gitops_ssh_secret","value":"git-ssh"}],"source":{"git":{"ref":{"branch":"main"},"url":"ssh://git@github.com/dapdelivery/where-for-dinner-app.git"},"subPath":"where-for-dinner-api-gateway"}}}
+          {"apiVersion":"carto.run/v1alpha1","kind":"Workload","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"where-for-dinner-notify","apps.tanzu.vmware.com/workload-type":"web","networking.knative.dev/visibility":"cluster-local"},"name":"where-for-dinner-notify","namespace":"my-apps"},"spec":{"build":{"env":[{"name":"BP_MAVEN_BUILD_ARGUMENTS","value":"-P native -Dmaven.test.skip=true --no-transfer-progress package"}]},"params":[{"name":"gitops_repository","value":"ssh://git@github.com/dapdelivery/where-for-dinner-dest-22-02-2023-13-17-50-104967261.git"},{"name":"gitops_ssh_secret","value":"git-ssh"}],"source":{"git":{"ref":{"branch":"main"},"url":"ssh://git@github.com/dapdelivery/where-for-dinner-22-02-2023-13-17-50-104967261.git"},"subPath":"where-for-dinner-notify"}}}
       labels:
         app.kubernetes.io/component: run
-        app.kubernetes.io/part-of: where-for-dinner-api-gateway
+        app.kubernetes.io/part-of: where-for-dinner-notify
         apps.tanzu.vmware.com/auto-configure-actuators: "false"
         apps.tanzu.vmware.com/workload-type: web
-        carto.run/workload-name: where-for-dinner
+        carto.run/workload-name: where-for-dinner-notify
         conventions.carto.run/framework: spring-boot
+        networking.knative.dev/visibility: cluster-local
         tanzu.app.live.view: "true"
         tanzu.app.live.view.application.actuator.path: actuator
         tanzu.app.live.view.application.actuator.port: "8080"
-        tanzu.app.live.view.application.flavours: spring-boot_spring-cloud-gateway
-        tanzu.app.live.view.application.name: where-for-dinner
+        tanzu.app.live.view.application.flavours: spring-boot
+        tanzu.app.live.view.application.name: where-for-dinner-notify
     spec:
       containers:
       - env:
         - name: JAVA_TOOL_OPTIONS
           value: -Dmanagement.endpoint.health.probes.add-additional-paths="true" -Dmanagement.health.probes.enabled="true" -Dserver.port="8080"
-        image: dev.registry.tanzu.vmware.com/tanzu-application-platform/ci-pipeline/apps-22-02-2023-13-17-50-104967261/where-for-dinner-my-apps@sha256:ad92c40cdd30beab35ee78ba748f1e06fc713d121fcdc7683916e58ce54870b6
+        image: dev.registry.tanzu.vmware.com/tanzu-application-platform/ci-pipeline/apps-22-02-2023-13-17-50-104967261/where-for-dinner-notify-my-apps@sha256:2fbfcf184bb04afd2d3f3e1f4c3692a8afe03e1d9d81db3d2ed6b621e37046fa
         livenessProbe:
           httpGet:
             path: /livez
